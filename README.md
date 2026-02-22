@@ -44,6 +44,29 @@ sudo rmmod cw2217b
 
 The CW2217B must be registered as an I2C device on the appropriate bus. For example, via a device tree overlay or manual instantiation:
 
+```dts
+/dts-v1/;
+/plugin/;
+
+/ {
+    compatible = "brcm,bcm2711", "brcm,bcm2712", "brcm,bcm2835";
+
+    fragment@0 {
+        target = <&i2c1>;
+        __overlay__ {
+            #address-cells = <1>;
+            #size-cells = <0>;
+            status = "okay";
+
+            cw2217b: cw2217b@64 {
+                reg = <0x64>;
+                compatible = "cellwise,cw2217b";
+            };
+        };
+    };
+};
+```
+
 ```sh
 echo cw2217b 0x64 | sudo tee /sys/bus/i2c/devices/i2c-1/new_device
 echo 0x64 | sudo tee /sys/bus/i2c/devices/i2c-1/delete_device
