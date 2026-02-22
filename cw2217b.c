@@ -376,6 +376,7 @@ static struct i2c_driver cw2217b_i2c_driver = {
 };
 module_i2c_driver(cw2217b_i2c_driver);
 
+// MODULE_AUTHOR("Jeff Curless <jeff@thecurlesses.com>");
 MODULE_AUTHOR("Diego Fernandez <diego@diegofer.com>");
 MODULE_AUTHOR("Ralf Miunske <rbm78bln@github.com>");
 MODULE_DESCRIPTION("Linux power_supply driver for Cellwise CW2217B I2C battery fuel gauge with mains and battery support");
