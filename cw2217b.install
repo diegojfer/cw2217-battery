@@ -1,0 +1,16 @@
+post_install() {
+  make -C '/usr/src/kmod_cw2217b-dkms' update || true
+  make -C '/usr/src/kmod_cw2217b-dkms' dkms.conf || true
+  depmod -a
+}
+
+post_upgrade() {
+  make -C '/usr/src/kmod_cw2217b-dkms' update || true
+  make -C '/usr/src/kmod_cw2217b-dkms' dkms.conf || true
+  depmod -a
+}
+
+post_remove() {
+  rm -rf '/usr/src/kmod_cw2217b-dkms' || true
+  depmod -a
+}

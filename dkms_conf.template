@@ -1,0 +1,6 @@
+PACKAGE_NAME="@PKGNAME@"
+PACKAGE_VERSION="@PKGVER@"
+MAKE[0]="sh -c 'make update; make dkms.conf; make KVERSION=${kernelver} modules'"
+BUILT_MODULE_NAME[0]="@PKGBASE@"
+DEST_MODULE_LOCATION[0]="/updates/dkms"
+AUTOINSTALL="yes"

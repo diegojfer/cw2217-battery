@@ -1,3 +1,11 @@
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Linux power_supply driver for Cellwise CW2217B I2C battery fuel gauge with mains and battery support.
+ *
+ * Author:  Ralf Miunske, Diego Fernandez, Jeff Curless
+ *
+ */
+
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/i2c.h>
@@ -376,8 +384,9 @@ static struct i2c_driver cw2217b_i2c_driver = {
 };
 module_i2c_driver(cw2217b_i2c_driver);
 
+MODULE_VERSION("1.0.0");
+MODULE_DESCRIPTION("Linux power_supply driver for Cellwise CW2217B I2C battery fuel gauge with mains and battery support");
 // MODULE_AUTHOR("Jeff Curless <jeff@thecurlesses.com>");
 MODULE_AUTHOR("Diego Fernandez <diego@diegofer.com>");
 MODULE_AUTHOR("Ralf Miunske <rbm78bln@github.com>");
-MODULE_DESCRIPTION("Linux power_supply driver for Cellwise CW2217B I2C battery fuel gauge with mains and battery support");
 MODULE_LICENSE("GPL");
