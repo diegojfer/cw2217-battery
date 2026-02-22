@@ -1,22 +1,21 @@
-
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/i2c.h>
 #include <linux/power_supply.h>
 #include <linux/mutex.h>
 
-#define CW2217_RSENSE_MOHM (10)
+#define CW2217B_RSENSE_MOHM (10)
 
-#define CW2217_VOLTAGE_HIGH_REGISTER (0x02)
-#define CW2217_VOLTAGE_LOW_REGISTER (0x03)
+#define CW2217B_VOLTAGE_HIGH_REGISTER (0x02)
+#define CW2217B_VOLTAGE_LOW_REGISTER (0x03)
 
-#define CW2217_SOC_HIGH_REGISTER (0x04)
-#define CW2217_SOC_LOW_REGISTER (0x05)
+#define CW2217B_SOC_HIGH_REGISTER (0x04)
+#define CW2217B_SOC_LOW_REGISTER (0x05)
 
-#define CW2217_TEMPERATURE_REGISTER (0x06)
+#define CW2217B_TEMPERATURE_REGISTER (0x06)
 
-#define CW2217_CURRENT_HIGH_REGISTER (0x0E)
-#define CW2217_CURRENT_LOW_REGISTER (0x0F)
+#define CW2217B_CURRENT_HIGH_REGISTER (0x0E)
+#define CW2217B_CURRENT_LOW_REGISTER (0x0F)
 
 typedef struct _cw2217b_battery_t {
     struct i2c_client * i2c_client;
@@ -247,7 +246,7 @@ int cw2217b_i2c_read_register(struct i2c_client * client, u8 reg, u8 * val) {
 int cw2217b_battery_get_voltage(struct i2c_client * client, int * voltage) {
     // Request voltage high value
     u8 voltage_high = 0x00;
-    int voltage_high_result = cw2217b_i2c_read_register(client, CW2217_VOLTAGE_HIGH_REGISTER, &voltage_high);
+    int voltage_high_result = cw2217b_i2c_read_register(client, CW2217B_VOLTAGE_HIGH_REGISTER, &voltage_high);
     if (voltage_high_result) {
         dev_err(&client->dev, "Unable to read voltage high register from CW2217B(%i)\n", voltage_high_result);
 
@@ -256,7 +255,7 @@ int cw2217b_battery_get_voltage(struct i2c_client * client, int * voltage) {
 
     // Request voltage low value
     u8 voltage_low = 0x00;
-    int voltage_low_result = cw2217b_i2c_read_register(client, CW2217_VOLTAGE_LOW_REGISTER, &voltage_low);
+    int voltage_low_result = cw2217b_i2c_read_register(client, CW2217B_VOLTAGE_LOW_REGISTER, &voltage_low);
     if (voltage_low_result) {
         dev_err(&client->dev, "Unable to read voltage low register from CW2217B(%i)\n", voltage_low_result);
 
@@ -282,7 +281,7 @@ int cw2217b_battery_get_voltage(struct i2c_client * client, int * voltage) {
 int cw2217b_battery_get_soc(struct i2c_client * client, int * soc) {
     // Request SoC high value
     u8 soc_high = 0x00;
-    int soc_high_result = cw2217b_i2c_read_register(client, CW2217_SOC_HIGH_REGISTER, &soc_high);
+    int soc_high_result = cw2217b_i2c_read_register(client, CW2217B_SOC_HIGH_REGISTER, &soc_high);
     if (soc_high_result) {
         dev_err(&client->dev, "Unable to read soc high register from CW2217B(%i)\n", soc_high_result);
 
@@ -291,7 +290,7 @@ int cw2217b_battery_get_soc(struct i2c_client * client, int * soc) {
 
     // Request SoC low value
     // u8 soc_low = 0x00;
-    // int soc_low_result = cw2217b_i2c_read_register(client, CW2217_SOC_LOW_REGISTER, &soc_low);
+    // int soc_low_result = cw2217b_i2c_read_register(client, CW2217B_SOC_LOW_REGISTER, &soc_low);
     // if (soc_low_result) {
     //     dev_err(&client->dev, "Unable to read soc low register from CW2217B(%i)\n", soc_low_result);
     //
@@ -312,7 +311,7 @@ int cw2217b_battery_get_soc(struct i2c_client * client, int * soc) {
 int cw2217b_battery_get_current(struct i2c_client * client, int * curr) {
     // Request current high value
     u8 current_high = 0x00;
-    int current_high_result = cw2217b_i2c_read_register(client, CW2217_CURRENT_HIGH_REGISTER, &current_high);
+    int current_high_result = cw2217b_i2c_read_register(client, CW2217B_CURRENT_HIGH_REGISTER, &current_high);
     if (current_high_result) {
         dev_err(&client->dev, "Unable to read current high register from CW2217B(%i)\n", current_high_result);
 
@@ -321,7 +320,7 @@ int cw2217b_battery_get_current(struct i2c_client * client, int * curr) {
 
     // Request current low value
     u8 current_low = 0x00;
-    int current_low_result = cw2217b_i2c_read_register(client, CW2217_CURRENT_LOW_REGISTER, &current_low);
+    int current_low_result = cw2217b_i2c_read_register(client, CW2217B_CURRENT_LOW_REGISTER, &current_low);
     if (current_low_result) {
         dev_err(&client->dev, "Unable to read current low register from CW2217B(%i)\n", current_low_result);
 
@@ -332,7 +331,7 @@ int cw2217b_battery_get_current(struct i2c_client * client, int * curr) {
     s16 raw_current = ((s16)current_high << 8) | ((u16)current_low << 0);
 
     s64 num = (s64)raw_current * (s64)52400000;
-    s64 denom = (s64)32768 * (s64)(CW2217_RSENSE_MOHM);
+    s64 denom = (s64)32768 * (s64)(CW2217B_RSENSE_MOHM);
     num += (num >= 0) ? (denom / 2) : -(denom / 2);
 
     int calculated_current = (int)(num / denom);
@@ -345,7 +344,7 @@ int cw2217b_battery_get_current(struct i2c_client * client, int * curr) {
 int cw2217b_battery_get_temperature(struct i2c_client * client, int * temp) {
     // Request temperature value
     u8 temperature_value = 0x00;
-    int temperature_result = cw2217b_i2c_read_register(client, CW2217_TEMPERATURE_REGISTER, &temperature_value);
+    int temperature_result = cw2217b_i2c_read_register(client, CW2217B_TEMPERATURE_REGISTER, &temperature_value);
     if (temperature_result) {
         dev_err(&client->dev, "Unable to read temperature register from CW2217B(%i)\n", temperature_result);
 
