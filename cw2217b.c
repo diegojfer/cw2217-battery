@@ -41,7 +41,7 @@ typedef struct _cw2217_battery_t {
 } cw2217_battery_t;
 
 //
-// cw2217-powersupply.h
+// cw2217b.h
 //
 int cw2217_battery_get_property(struct power_supply * psy, enum power_supply_property psp, union power_supply_propval * val);
 static const enum power_supply_property cw2217_powersupply_props[] = {
@@ -53,7 +53,7 @@ static const enum power_supply_property cw2217_powersupply_props[] = {
 	POWER_SUPPLY_PROP_TEMP,
 };
 static const struct power_supply_desc cw2217_powersupply_desc = {
-    .name = "cw2217-powersupply",
+    .name = "BAT0",
 	.type = POWER_SUPPLY_TYPE_BATTERY,
     .get_property = cw2217_battery_get_property,
     .properties = cw2217_powersupply_props,
@@ -61,19 +61,19 @@ static const struct power_supply_desc cw2217_powersupply_desc = {
 };
 
 //
-// cw2217-work.h
+// cw2217b-work.h
 //
 void cw2217_poll_workfn(struct work_struct * work);
 
 //
-// cw2217-i2c.h
+// cw2217b-i2c.h
 //
 cw2217_result_t cw2217_i2c_probe(struct i2c_client * client);
 void cw2217_i2c_remove(struct i2c_client * client);
 cw2217_result_t cw2217_i2c_read_register(struct i2c_client * client, cw2217_uint8_t reg, cw2217_uint8_t * val);
 
 //
-// cw2217-battery.h
+// cw2217b.h
 //
 cw2217_result_t cw2217_battery_get_voltage(struct i2c_client * client, int * voltage);
 cw2217_result_t cw2217_battery_get_soc(struct i2c_client * client, int * soc);
@@ -81,7 +81,7 @@ cw2217_result_t cw2217_battery_get_current(struct i2c_client * client, int * cur
 cw2217_result_t cw2217_battery_get_temperature(struct i2c_client * client, int * temperature);
 
 //
-// cw2217-powersupply.c
+// cw2217b.c
 //
 int cw2217_battery_get_property(struct power_supply * psy, enum power_supply_property psp, union power_supply_propval * val) {
     cw2217_battery_t * battery = power_supply_get_drvdata(psy);
@@ -95,7 +95,7 @@ int cw2217_battery_get_property(struct power_supply * psy, enum power_supply_pro
     int current_level = battery->current_level;
     int temp_level = battery->temp_level;
 	mutex_unlock(&battery->mutex);
-    
+
     switch (psp) {
 	case POWER_SUPPLY_PROP_PRESENT:
 		val->intval = 1;
@@ -118,12 +118,12 @@ int cw2217_battery_get_property(struct power_supply * psy, enum power_supply_pro
 	default:
 		return -EINVAL;
 	}
-    
+
 	return 0;
 }
 
 //
-// cw2217-work.c
+// cw2217b-work.c
 //
 void cw2217_poll_workfn(struct work_struct * work) {
     cw2217_battery_t * battery = container_of(to_delayed_work(work), cw2217_battery_t, poll_work);
@@ -170,11 +170,11 @@ void cw2217_poll_workfn(struct work_struct * work) {
 }
 
 //
-// cw2217-i2c.c
-// 
+// cw2217b-i2c.c
+//
 cw2217_result_t cw2217_i2c_probe(struct i2c_client * client) {
     dev_info(&client->dev, "CC2217 I2C device probed at address 0x%02x\n", client->addr);
-    
+
     // Allocate memory for battery management
     cw2217_battery_t * battery = kzalloc(sizeof(cw2217_battery_t), GFP_KERNEL);
     if (battery == NULL) {
@@ -204,7 +204,7 @@ cw2217_result_t cw2217_i2c_probe(struct i2c_client * client) {
 
     if (IS_ERR(battery->power_supply)) {
 		int ret = PTR_ERR(battery->power_supply);
-		
+
         i2c_set_clientdata(client, NULL);
         kfree(battery);
 
@@ -221,13 +221,13 @@ void cw2217_i2c_remove(struct i2c_client * client) {
         dev_info(&client->dev, "error: unable to get client data!\n");
         return;
     }
-    
+
     if (battery->power_supply) {
         power_supply_unregister(battery->power_supply);
     }
 
     cancel_delayed_work_sync(&battery->poll_work);
-    
+
     i2c_set_clientdata(client, NULL);
     kfree(battery);
 }
@@ -252,8 +252,8 @@ cw2217_result_t cw2217_i2c_read_register(struct i2c_client * client, cw2217_uint
 }
 
 //
-// cw2217-battery.c
-// 
+// cw2217b.c
+//
 cw2217_result_t cw2217_battery_get_voltage(struct i2c_client * client, int * voltage) {
     // Request voltage high value
     cw2217_uint8_t voltage_high = 0x00;
@@ -286,7 +286,7 @@ cw2217_result_t cw2217_battery_get_voltage(struct i2c_client * client, int * vol
     } else {
         *voltage = (int)calculated_voltage;
     }
-    
+
     return 0;
 }
 cw2217_result_t cw2217_battery_get_soc(struct i2c_client * client, int * soc) {
@@ -304,7 +304,7 @@ cw2217_result_t cw2217_battery_get_soc(struct i2c_client * client, int * soc) {
     // cw2217_result_t soc_low_result = cw2217_i2c_read_register(client, CW2217_SOC_LOW_REGISTER, &soc_low);
     // if (soc_low_result) {
     //     dev_err(&client->dev, "Unable to read soc low register from CW2217 (%i)\n", soc_low_result);
-    // 
+    //
     //     return soc_low_result;
     // }
 
@@ -344,7 +344,7 @@ cw2217_result_t cw2217_battery_get_current(struct i2c_client * client, int * cur
     cw2217_int64_t num = (cw2217_int64_t)raw_current * (cw2217_int64_t)52400000;
     cw2217_int64_t denom = (cw2217_int64_t)32768 * (cw2217_int64_t)(CW2217_RSENSE_MOHM);
     num += (num >= 0) ? (denom / 2) : -(denom / 2);
-    
+
     int calculated_current = (int)(num / denom);
 
     *curr = calculated_current;
@@ -372,14 +372,14 @@ cw2217_result_t cw2217_battery_get_temperature(struct i2c_client * client, int *
 
 
 static const struct i2c_device_id cw2217_i2c_device_id[] = {
-    { "cw2217", 0 },
+    { "cw2217b", 0 },
     { }
 };
 MODULE_DEVICE_TABLE(i2c, cw2217_i2c_device_id);
 
 static struct i2c_driver cw2217_i2c_driver = {
     .driver = {
-        .name = "cw2217_i2c",
+        .name = "cw2217b",
     },
     .probe = cw2217_i2c_probe,
     .remove = cw2217_i2c_remove,
@@ -388,5 +388,6 @@ static struct i2c_driver cw2217_i2c_driver = {
 module_i2c_driver(cw2217_i2c_driver);
 
 MODULE_AUTHOR("Diego Fernandez <diego@diegofer.com>");
-MODULE_DESCRIPTION("Cellwise CW2217 I2C battery fuel gauge driver with Linux power_supply support");
+MODULE_AUTHOR("Ralf Miunske <rbm78bln@github.com>");
+MODULE_DESCRIPTION("Linux power_supply driver for Cellwise CW2217B I2C battery fuel gauge with mains and battery support");
 MODULE_LICENSE("GPL");
