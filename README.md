@@ -1,6 +1,6 @@
 # CW2217B Battery Fuel Gauge Linux Driver
 
-Linux kernel driver for the **Cellwise CW2217** battery fuel gauge IC. Communicates over I2C and exposes battery data through the Linux `power_supply` subsystem.
+Linux kernel driver for the **Cellwise CW2217B** battery fuel gauge IC. Communicates over I2C and exposes battery and mains data through the Linux `power_supply` subsystem.
 
 ## Reported Properties
 
