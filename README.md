@@ -72,7 +72,7 @@ echo cw2217b 0x64 | sudo tee /sys/bus/i2c/devices/i2c-1/new_device
 echo 0x64 | sudo tee /sys/bus/i2c/devices/i2c-1/delete_device
 ```
 
-Once loaded, battery data is available under `/sys/class/power_supply/cw2217b/`.
+Once loaded, battery data is available under `/sys/class/power_supply/BAT0/`.
 
 ## Cleaning
 
