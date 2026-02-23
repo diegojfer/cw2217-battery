@@ -83,5 +83,3 @@ make clean
 ## License
 
 GPL License
-
-![-](https://miunske.eu/github/?cw2217b)
