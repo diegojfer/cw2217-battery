@@ -1,3 +1,19 @@
+*.o
+*.ko
+*.mod
+*.mod.*
+*.asm
+*.map
+*.cmd
+.*.cmd
+*.dtbo
+*.order
+*.symbols
+*.symvers
+dkms.conf
+modules.order
+kmod_cw2217b-dkms*.pkg.tar*
+
 # Created by https://www.toptal.com/developers/gitignore/api/windows,macos,linux,visualstudiocode,textmate,notepadpp,vim,emacs,xcode,visualstudio,jetbrains
 # Edit at https://www.toptal.com/developers/gitignore?templates=windows,macos,linux,visualstudiocode,textmate,notepadpp,vim,emacs,xcode,visualstudio,jetbrains
 
